@@ -1,34 +1,61 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable no-unused-vars */
+
+import React, { useState } from 'react';
+import Card from './Card/Card';
+import Sidebar from './Sidebar/Sidebar';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Main = () => {
+        const [items, setItems] = useState([]);
+        const [CreditHour, setCreditHour] = useState(0);
+        const [ReduceHour, setReduceHour] = useState(0)
+    
 
-    const [card, setCard] =useState ([]);
+        const handleClick = (card) => {
 
-    useEffect ( () => {
 
-        fetch ('Course.json')
-        .then (res => res.json ())
-        .then (data => setCard(data))
-
-    } , [])
+            const matchingItem = items.find(item => item.id == card.id);
+    
+            let hour = card.courseHours;
+            if(matchingItem){ 
+              return  toast ("You Already Select It !")
+            }
+            else{
+                items.forEach(item => {
+                    hour = hour + item.courseHours;
+                });
+                const totalReduceHour = 20 - hour;
+    
+                if(hour > 20){
+                  return  toast  ('Your Credit is Over ')
+                }
+                setReduceHour(totalReduceHour);
+                setCreditHour(hour);
+    
+                setItems([...items, card]);
+            }
+        };
+    
 
     return (
+        <div className='flex  ' >
 
-        <div>
-            <div className='grid lg:grid-cols-3 gap-4 justify-items-center'>
-            <div className="card card-compact w-96 bg-base-100 shadow-xl">
-    <figure><img src="{}" alt="Shoes" /></figure>
-    <div className="card-body">
-    <h2 className="card-title">Shoes!</h2>
-    <p></p>
-    <div className="card-actions justify-end">
-      <button className="btn btn-primary">Buy Now</button>
-    </div>
-  </div>
-   </div>
+            <div className='' >
+          <Card
+           handleClick={handleClick}
 
+          > </Card>
             </div>
-          
+
+            <div className=' w-1/4'>
+         <Sidebar
+         items={items}
+         CreditHour={CreditHour}
+         ReduceHour={ReduceHour}
+         ></Sidebar>
+            </div>
+            
         </div>
     );
 };
